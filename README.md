@@ -25,7 +25,7 @@ pip install -r requirements.txt
 1. Place your input image in the `input` folder
 2. Run the script:
 ```bash
-python remove_bg.py
+python manage.py runserver
 ```
 3. Find your processed image in the `output` folder
 
