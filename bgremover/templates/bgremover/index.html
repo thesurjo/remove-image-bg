@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Background Remover</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            margin: 0;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 20px;
+        }
+        .container {
+            background-color: rgba(255, 255, 255, 0.95);
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            backdrop-filter: blur(10px);
+        }
+        h1 {
+            color: #2d3748;
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 1.5em;
+            font-weight: 600;
+        }
+        .upload-form {
+            text-align: center;
+            margin: 40px 0;
+        }
+        .image-preview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+        .preview-box {
+            background-color: #f8fafc;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: transform 0.2s ease;
+        }
+        .preview-box:hover {
+            transform: translateY(-5px);
+        }
+        .preview-box h3 {
+            color: #4a5568;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+        .preview-box img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+        }
+        input[type="file"] {
+            display: none;
+        }
+        .upload-btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 10px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: none;
+        }
+        .upload-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .submit-btn {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .submit-btn:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        .loading {
+            display: none;
+            margin: 20px auto;
+            text-align: center;
+        }
+        .loading::after {
+            content: "";
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border: 3px solid #e2e8f0;
+            border-radius: 50%;
+            border-top-color: #667eea;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Background Remover</h1>
+        
+        <form method="post" enctype="multipart/form-data" class="upload-form" id="uploadForm">
+            {% csrf_token %}
+            <label class="upload-btn">
+                Choose Image
+                <input type="file" name="image" accept="image/*" onchange="previewImage(this);">
+            </label>
+            <button type="submit" class="submit-btn" id="submitBtn">Remove Background</button>
+        </form>
+
+        <div class="loading" id="loading"></div>
+
+        <div class="image-preview">
+            {% if input_image %}
+            <div class="preview-box">
+                <h3>Original Image</h3>
+                <img src="{{ input_image }}" alt="Original Image">
+            </div>
+            {% endif %}
+            
+            {% if output_image %}
+            <div class="preview-box">
+                <h3>Processed Image</h3>
+                <img src="{{ output_image }}" alt="Processed Image">
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    var preview = document.createElement('div');
+                    preview.className = 'preview-box';
+                    preview.innerHTML = `
+                        <h3>Preview</h3>
+                        <img src="${e.target.result}" alt="Preview">
+                    `;
+                    
+                    var container = document.querySelector('.image-preview');
+                    container.innerHTML = '';
+                    container.appendChild(preview);
+                    
+                    document.getElementById('submitBtn').disabled = false;
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        document.getElementById('uploadForm').onsubmit = function() {
+            document.getElementById('submitBtn').disabled = true;
+            document.getElementById('loading').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
