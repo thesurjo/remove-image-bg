@@ -11,7 +11,7 @@ A simple and efficient tool to remove backgrounds from images using Python.
 
 1. Clone this repository:
 ```bash
-git clone https://github.com/TheSurjo/remove-image-bg.git
+git clone https://github.com/thesurjo/remove-image-bg.git
 cd remove-image-bg
 ```
 
